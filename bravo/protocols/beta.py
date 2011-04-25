@@ -976,8 +976,22 @@ class BravoProtocol(BetaServerProtocol):
 
         chunk = self.chunks[bigx, bigz]
 
-        height = chunk.height_at(smallx, smallz) + 2
-        self.location.y = height
+        column = chunk.get_column(smallx, smallz)
+        height = chunk.height_at(smallx, smallz)
+
+        y = self.location.y
+
+        if y > height:
+            self.location.y = height + 2
+        else:
+            block1 = blocks[column[y]]
+            block2 = blocks[column[y - 1]]
+            while y < 127 and (block1.physical or block2.physical):
+                y += 1
+                block2 = block1
+                block1 = blocks[column[y]]
+            
+            self.location.y = y + 2 if y >= 127 else y
 
         packet = self.location.save_to_packet()
         self.transport.write(packet)
