@@ -986,7 +986,7 @@ class BravoProtocol(BetaServerProtocol):
         else:
             block1 = blocks[column[y]]
             block2 = blocks[column[y - 1]]
-            while y < 127 and (block1.physical or block2.physical):
+            while y < 127 and (not block1.hollow or not block2.hollow):
                 y += 1
                 block2 = block1
                 block1 = blocks[column[y]]

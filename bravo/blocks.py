@@ -19,7 +19,7 @@ class Block(object):
 
     __slots__ = (
         "_o_dict",
-        "physical",
+        "hollow",
         "breakable",
         "dim",
         "drop",
@@ -32,7 +32,7 @@ class Block(object):
     )
 
     def __init__(self, slot, name, drop=None, replace=0, ratio=1, quantity=1,
-            dim=16, breakable=True, physical=True, orientation=None):
+            dim=16, breakable=True, hollow=False, orientation=None):
         """
         :param int slot: The index of this block. Must be globally unique.
         :param str name: A common name for this block.
@@ -51,7 +51,7 @@ class Block(object):
         :param bool breakable: Whether this block is diggable, breakable,
             bombable, explodeable, etc. Only a few blocks actually genuinely
             cannot be broken, so the default is True.
-        :param bool physical: Determine if we can create an entity in this block
+        :param bool holow: Determine if we can create an entity in this block
         :param tuple orientation: The orientation data for a block. See
             :meth:`orientable` for an explanation. The data should be in standard
             face order.
@@ -73,7 +73,7 @@ class Block(object):
         self.quantity = quantity
         self.dim = dim
         self.breakable = breakable
-        self.physical = physical
+        self.hollow = hollow
 
         if orientation:
             self._o_dict = dict(zip(faces, orientation))
@@ -432,34 +432,34 @@ dims[92] = 0 # Cake
 dims[93] = 0 # redstone-repeater-off
 dims[94] = 0 # redstone-repeater-on
 
-not_physicals = set()
+hollows = set()
 
-not_physicals.add(0)  # Air
-not_physicals.add(6)  # Sapling
-not_physicals.add(8)  # water
-not_physicals.add(9)  # spring
-not_physicals.add(10) # lava
-not_physicals.add(11) # lava-spring
-not_physicals.add(37) # flower
-not_physicals.add(38) # rose
-not_physicals.add(39) # brown-mushroom
-not_physicals.add(40) # red-mushroom
-not_physicals.add(50) # torch
-not_physicals.add(51) # fire
-not_physicals.add(55) # redstone-wire
-not_physicals.add(59) # crops
-not_physicals.add(63) # signpost
-not_physicals.add(66) # tracks
-not_physicals.add(68) # wall-sign
-not_physicals.add(69) # lever
-not_physicals.add(70) # stone-plate
-not_physicals.add(72) # wooden-plate
-not_physicals.add(75) # redstone-torch-off
-not_physicals.add(76) # redstone-torch
-not_physicals.add(77) # stone-button
-not_physicals.add(78) # snow
-not_physicals.add(83) # sugar-cane
-not_physicals.add(90) # portal
+hollows.add(0)  # Air
+hollows.add(6)  # Sapling
+hollows.add(8)  # water
+hollows.add(9)  # spring
+hollows.add(10) # lava
+hollows.add(11) # lava-spring
+hollows.add(37) # flower
+hollows.add(38) # rose
+hollows.add(39) # brown-mushroom
+hollows.add(40) # red-mushroom
+hollows.add(50) # torch
+hollows.add(51) # fire
+hollows.add(55) # redstone-wire
+hollows.add(59) # crops
+hollows.add(63) # signpost
+hollows.add(66) # tracks
+hollows.add(68) # wall-sign
+hollows.add(69) # lever
+hollows.add(70) # stone-plate
+hollows.add(72) # wooden-plate
+hollows.add(75) # redstone-torch-off
+hollows.add(76) # redstone-torch
+hollows.add(77) # stone-button
+hollows.add(78) # snow
+hollows.add(83) # sugar-cane
+hollows.add(90) # portal
 
 blocks = {}
 """
@@ -523,8 +523,8 @@ for i, name in enumerate(block_names):
         kwargs["breakable"] = False
     if i in dims:
         kwargs["dim"] = dims[i]
-    if i in not_physicals:
-        kwargs["physical"] = False
+    if i in hollows:
+        kwargs["hollow"] = True
 
     b = Block(i, name, **kwargs)
     _add_block(b)
