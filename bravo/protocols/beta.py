@@ -17,8 +17,9 @@ from bravo.blocks import blocks, items
 from bravo.config import configuration
 from bravo.entity import Sign
 from bravo.factories.infini import InfiniClientFactory
-from bravo.ibravo import IChatCommand, IBuildHook, IDigHook, ISignHook, IUseHook
-from bravo.inventory import Workbench, sync_inventories
+from bravo.ibravo import (IChatCommand, IBuildHook, IDigHook, ISignHook,
+        IUseHook, IInteractiveHook)
+from bravo.inventory import sync_inventories
 from bravo.location import Location
 from bravo.motd import get_motd
 from bravo.packets.beta import parse_packets, make_packet, make_error_packet
@@ -755,16 +756,6 @@ class BravoProtocol(BetaServerProtocol):
                 if not cont:
                     break
 
-            return
-
-        if block == blocks["workbench"].slot:
-            i = Workbench()
-            sync_inventories(self.player.inventory, i)
-            self.windows[self.wid] = i
-            packet = make_packet("window-open", wid=self.wid, type="workbench",
-                title="Hurp", slots=2)
-            self.wid += 1
-            self.transport.write(packet)
             return
 
         # Ignore clients that think -1 is placeable.
