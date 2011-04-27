@@ -22,6 +22,7 @@ class Block(object):
         "breakable",
         "dim",
         "drop",
+        "interactive",
         "key",
         "name",
         "quantity",
@@ -31,7 +32,8 @@ class Block(object):
     )
 
     def __init__(self, slot, name, secondary=0, drop=None, replace=0, ratio=1,
-        quantity=1, dim=16, breakable=True, orientation=None):
+        quantity=1, dim=16, breakable=True, orientation=None,
+        interactive=False):
         """
         :param int slot: The index of this block. Must be globally unique.
         :param str name: A common name for this block.
@@ -72,6 +74,7 @@ class Block(object):
         self.quantity = quantity
         self.dim = dim
         self.breakable = breakable
+        self.interactive = interactive
 
         if orientation:
             self._o_dict = dict(zip(faces, orientation))
@@ -498,6 +501,14 @@ dims[92] = 0 # Cake
 dims[93] = 0 # redstone-repeater-off
 dims[94] = 0 # redstone-repeater-on
 
+interactives = set()
+
+interactives.add(23) # dispenser
+interactives.add(54) # chest
+interactives.add(58) # workbench
+interactives.add(61) # furnace
+interactives.add(62) # burning furnace
+
 
 blocks = {}
 """
@@ -523,7 +534,7 @@ _add_block(Block(18, "leaves", drop=6, ratio=1 / 9, dim=1))
 # Torches are orientable.
 _add_block(Block(50, "torch", orientation=(None, 5, 4, 3, 2, 1), dim=0))
 # Furnaces are orientable.
-_add_block(Block(61, "furnace", orientation=(0, 1, 2, 3, 4, 5)))
+_add_block(Block(61, "furnace", orientation=(0, 1, 2, 3, 4, 5), interactive=True))
 # Ladders are orientable.
 _add_block(Block(65, "ladder", orientation=(None, None, 2, 3, 4, 5), dim=0))
 # Redstone ore drops 5 redstone dusts.
@@ -561,6 +572,8 @@ for i, name in enumerate(block_names):
         kwargs["breakable"] = False
     if i in dims:
         kwargs["dim"] = dims[i]
+    if i in interactives:
+        kwargs["interactive"] = True
 
     b = Block(i, name, **kwargs)
     _add_block(b)
