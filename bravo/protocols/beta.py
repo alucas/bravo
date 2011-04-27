@@ -435,6 +435,9 @@ class BravoProtocol(BetaServerProtocol):
         names = configuration.getlistdefault(self.config_name, "dig_hooks",
             [])
         self.dig_hooks = retrieve_sorted_plugins(IDigHook, names)
+        names = configuration.getlistdefault(self.config_name, "interactive_hooks",
+            [])
+        self.interactive_hooks = retrieve_sorted_plugins(IInteractiveHook, names)
         names = configuration.getlistdefault(self.config_name, "sign_hooks",
             [])
         self.sign_hooks = retrieve_sorted_plugins(ISignHook, names)
@@ -745,8 +748,16 @@ class BravoProtocol(BetaServerProtocol):
             self.error("Couldn't select in chunk (%d, %d)!" % (bigx, bigz))
             return
 
-        if (chunk.get_block((smallx, container.y, smallz)) ==
-            blocks["workbench"].slot):
+        block = chunk.get_block((smallx, container.y, smallz))
+        if blocks[block].interactive:
+            for hook in self.interactive_hooks:
+                cont = hook.interactive_hook(self.factory, self, self.player, block)
+                if not cont:
+                    break
+
+            return
+
+        if block == blocks["workbench"].slot:
             i = Workbench()
             sync_inventories(self.player.inventory, i)
             self.windows[self.wid] = i

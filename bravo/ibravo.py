@@ -392,6 +392,14 @@ class IUseHook(ISortedPlugin):
         List of entity names this plugin wants to be called for.
         """)
 
+class IInteractiveHook(ISortedPlugin):
+    """
+    """
+
+    def interactive_hook(factory, protocol, player, block):
+        """
+        """
+
 class IAutomaton(IBravoPlugin):
     """
     An automaton.
