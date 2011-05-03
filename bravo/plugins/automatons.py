@@ -16,6 +16,7 @@ class Trees(object):
     implements(IAutomaton)
 
     blocks = (blocks["sapling"].slot,)
+    tracks = {}
     grow_step_min = 15
     grow_step_max = 60
 
@@ -45,12 +46,20 @@ class Trees(object):
             # Increment metadata.
             metadata += 4
             factory.world.set_metadata(coords, metadata)
-            reactor.callLater(randint(self.grow_step_min, self.grow_step_max),
+            delayed = reactor.callLater(
+                randint(self.grow_step_min, self.grow_step_max),
                 self.process, factory, coords)
+            self.tracks[coords] = delayed
 
     def feed(self, factory, coords):
-        reactor.callLater(randint(self.grow_step_min, self.grow_step_max),
+        delayed = reactor.callLater(randint(self.grow_step_min, self.grow_step_max),
             self.process, factory, coords)
+        self.tracks[coords] = delayed
+
+    def starve(self, coords):
+        if coords in self.tracks:
+            self.tracks[coords].cancel()
+            del self.tracks[coords]
 
     name = "trees"
 

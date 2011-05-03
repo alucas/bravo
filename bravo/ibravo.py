@@ -409,6 +409,10 @@ class IAutomaton(IBravoPlugin):
         Provide this automaton with block coordinates to handle later.
         """
 
+    def starve(coordinates):
+        """
+        """
+
 class IWorldResource(IBravoPlugin, IResource):
     """
     Interface for a world specific web resource.
