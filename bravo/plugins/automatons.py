@@ -5,7 +5,7 @@ from twisted.internet.defer import inlineCallbacks
 from zope.interface import implements
 
 from bravo.blocks import blocks
-from bravo.ibravo import IAutomaton
+from bravo.ibravo import IAutomaton, IDigHook
 from bravo.terrain.trees import ConeTree, NormalTree, RoundTree
 
 class Trees(object):
@@ -13,7 +13,7 @@ class Trees(object):
     Turn saplings into trees.
     """
 
-    implements(IAutomaton)
+    implements(IAutomaton, IDigHook)
 
     blocks = (blocks["sapling"].slot,)
     tracks = {}
@@ -56,11 +56,15 @@ class Trees(object):
             self.process, factory, coords)
         self.tracks[coords] = delayed
 
-    def starve(self, coords):
-        if coords in self.tracks:
+    def dig_hook(self, factory, chunk, x, y, z, block):
+        coords = (x, y, z)
+        if block in blocks and coords in self.tracks:
             self.tracks[coords].cancel()
             del self.tracks[coords]
 
     name = "trees"
+
+    after = tuple()
+    before = tuple()
 
 trees = Trees()
