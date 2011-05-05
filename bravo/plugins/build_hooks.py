@@ -109,10 +109,10 @@ class Build(object):
                 return True, builddata
 
         # Make sure we can remove it from the inventory first.
-        if not player.inventory.consume((block.slot, 0), player.equipped):
+        if not player.inventory.consume(block.key, player.equipped):
             # Okay, first one was a bust; maybe we can consume the related
             # block for dropping instead?
-            if not player.inventory.consume((block.drop, 0), player.equipped):
+            if not player.inventory.consume(block.key, player.equipped):
                 return True, builddata
 
         # Offset coords according to face.

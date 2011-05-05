@@ -507,7 +507,10 @@ This dictionary can be indexed by slot number or block name.
 """
 
 def _add_block(block):
-    blocks[block.slot] = block
+    if not block.key[1]:
+        blocks[block.slot] = block
+
+    blocks[block.key] = block
     blocks[block.name] = block
 
 # Special blocks. Please remember to comment *what* makes the block special;
@@ -539,16 +542,19 @@ _add_block(Block(79, "ice", drop=0, replace=8, dim=3))
 # Clay drops 4 clay balls.
 _add_block(Block(82, "clay", drop=337, quantity=4))
 
-for block in blocks.values():
-    blocks[block.name] = block
-    blocks[block.slot] = block
-
 items = {}
 """
 A dictionary of ``Item`` objects.
 
 This dictionary can be indexed by slot number or block name.
 """
+
+def _add_item(item):
+    if not item.key[1]:
+        items[item.slot] = item
+
+    items[item.key] = item
+    items[item.name] = item
 
 for i, name in enumerate(block_names):
     if not name or name in blocks:
@@ -569,15 +575,13 @@ for i, name in enumerate(item_names):
     kwargs = {}
     i += 0x100
     item = Item(i, name, **kwargs)
-    items[i] = item
-    items[name] = item
+    _add_item(item)
 
 for i, name in enumerate(special_item_names):
     kwargs = {}
     i += 0x8D0
     item = Item(i, name, **kwargs)
-    items[i] = item
-    items[name] = item
+    _add_item(item)
 
 _secondary_items = {
     items["coal"]: coal_names,
@@ -588,7 +592,7 @@ for base_item, names in _secondary_items.iteritems():
     for i, name in enumerate(names):
         kwargs = {}
         item = Item(base_item.slot, name, i, **kwargs)
-        items[name] = item
+        _add_item(item)
 
 _secondary_blocks = {
     blocks["leaves"]: leave_names,

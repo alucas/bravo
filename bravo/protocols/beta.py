@@ -765,20 +765,20 @@ class BravoProtocol(BetaServerProtocol):
         if container.face == "noop":
             return
 
-        if container.primary in blocks:
-            block = blocks[container.primary]
-        elif container.primary in items:
-            block = items[container.primary]
+        key = (container.primary, container.secondary)
+        if key in blocks:
+            block = blocks[key]
+        elif key in items:
+            block = items[key]
         else:
-            log.err("Ignoring request to place unknown block %d" %
-                container.primary)
+            log.err("Ignoring request to place unknown block {key}".format(key=key))
             return
 
         # it's the top of the world, you can't build here
         if container.y == 127 and container.face == '+y':
             return
 
-        builddata = BuildData(block, 0x0, container.x, container.y,
+        builddata = BuildData(block, block.key[1], container.x, container.y,
             container.z, container.face)
 
         for hook in self.build_hooks:
